@@ -6,28 +6,28 @@ import (
 	"github.com/kataras/iris/mvc"
 	"log"
 	"math/rand"
-	"os"
 	"sync"
 	"time"
 )
 
+type task struct {
+	id uint32
+	callback chan uint
+}
+
 var logger *log.Logger
 var packageList *sync.Map = new(sync.Map)
+var chTasks chan task = make(chan task)
 //[uint32][]uint = make(map[uint32][]uint)
 
 type lotteryController struct {
 	Ctx iris.Context
 }
 
-func initLog() {
-	f, _ := os.Create("./lottery_demo.log")
-	logger = log.New(f, "", log.Ldate|log.Lmicroseconds)
-}
-
 func newApp() *iris.Application {
 	app := iris.New()
 	mvc.New(app.Party("/")).Handle(&lotteryController{})
-	initLog()
+	go fetchPackagelistMoney()
 	return app
 }
 
@@ -118,27 +118,72 @@ func (c *lotteryController) GetGet() string {
 		return fmt.Sprintf("参数数值异常，uid=%d, id=%d\n",
 			uid, id)
 	}
-	listRaw, ok := packageList.Load(uint32(id))
-	list := listRaw.([]uint)
+
+	var list []uint
+	var ok bool
+	var listRaw interface{}
+	if listRaw, ok = packageList.Load(uint32(id)); ok {
+		list = listRaw.([]uint)
+	}
 	if !ok || len(list) < 1 {
 		return fmt.Sprintf("红包不存在, id=%d\n", id)
 	}
-	// 分配随机数
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	i := r.Intn(len(list))
-	money := list[i]
-	if len(list) > 1 {
-		if i == len(list) - 1 {
-			packageList.Store(uint32(id), list[:i])
-		} else if i == 0 {
-			packageList.Store(uint32(id), list[1:])
-		} else {
-			packageList.Store(uint32(id), append(list[:i], list[i+1:]...))
-		}
-	} else {
-		packageList.Delete(uint32(id))
+
+	// 1 构造一个抢红包任务
+	callback := make(chan uint)
+	t := task{id: uint32(id), callback: callback}
+	chTasks <- t
+	money := <-callback
+	if money <= 0 {
+		return "没有抢到红包"
 	}
+
+	// 2. 分配随机数
+	//r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	//i := r.Intn(len(list))
+	//money := list[i]
+	//if len(list) > 1 {
+	//	if i == len(list) - 1 {
+	//		packageList.Store(uint32(id), list[:i])
+	//	} else if i == 0 {
+	//		packageList.Store(uint32(id), list[1:])
+	//	} else {
+	//		packageList.Store(uint32(id), append(list[:i], list[i+1:]...))
+	//	}
+	//} else {
+	//	packageList.Delete(uint32(id))
+	//}
+
 	return fmt.Sprintf("恭喜你抢到一个红包，金额为：%d\n", money)
+}
+
+func fetchPackagelistMoney() {
+	for {
+		t := <-chTasks
+		id := t.id
+		listRaw, ok := packageList.Load(uint32(id))
+		if ok || listRaw != nil {
+			list := listRaw.([]uint)
+			// 分配随机数
+			r := rand.New(rand.NewSource(time.Now().UnixNano()))
+			i := r.Intn(len(list))
+			money := list[i]
+			if len(list) > 1 {
+				if i == len(list) - 1 {
+					packageList.Store(uint32(id), list[:i])
+				} else if i == 0 {
+					packageList.Store(uint32(id), list[1:])
+				} else {
+					packageList.Store(uint32(id), append(list[:i], list[i+1:]...))
+				}
+			} else {
+				packageList.Delete(uint32(id))
+			}
+			t.callback <- money
+		} else {
+			t.callback <- 0
+		}
+	}
 }
 
 
