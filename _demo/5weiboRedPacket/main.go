@@ -189,6 +189,3 @@ func fetchPackagelistMoney(chTask chan task) {
 		}
 	}
 }
-
-
-
