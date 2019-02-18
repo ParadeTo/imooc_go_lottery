@@ -1,1 +1,1 @@
-# imooc_go_lottery
+[系列文章](http://paradeto.com)
