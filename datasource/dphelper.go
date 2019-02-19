@@ -2,8 +2,8 @@ package datasource
 
 import (
 	"fmt"
-	"github.com/go-xorm/xorm"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/xorm"
 	"imooc_go_lottery/conf"
 	"log"
 	"sync"
