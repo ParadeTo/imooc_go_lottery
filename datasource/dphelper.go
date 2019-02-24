@@ -26,7 +26,7 @@ func InstanceDbMaster() *xorm.Engine {
 }
 
 func NewDbMaster() *xorm.Engine {
-	sourcename := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s/charset=utf8",
+	sourcename := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8",
 		conf.DbMaster.User,
 		conf.DbMaster.Pwd,
 		conf.DbMaster.Host,
@@ -34,7 +34,7 @@ func NewDbMaster() *xorm.Engine {
 		conf.DbMaster.Database)
 	instance, err := xorm.NewEngine(conf.DriverName, sourcename)
 	if err != nil {
-		log.Fatal("dbhelper.NewDbMaster NewEngine error", err)
+		log.Fatal("dbhelper.NewDbMaster: NewEngine error", err)
 	}
 	instance.ShowSQL(true)
 	masterInstance = instance

@@ -2,6 +2,7 @@ package services
 
 import (
 	"imooc_go_lottery/dao"
+	"imooc_go_lottery/datasource"
 	"imooc_go_lottery/models"
 )
 
@@ -19,7 +20,7 @@ type giftService struct {
 }
 
 func (s *giftService) GetAll() []models.LtGift {
-	panic("implement me")
+	return s.dao.GetAll()
 }
 
 func (s *giftService) CountAll() int64 {
@@ -44,6 +45,6 @@ func (s *giftService) Create(data *models.LtGift) error {
 
 func NewGiftService() GiftService {
 	return &giftService{
-		dao: dao.NewGiftDao(nil),
+		dao: dao.NewGiftDao(datasource.InstanceDbMaster()),
 	}
 }
