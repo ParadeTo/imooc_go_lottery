@@ -2,54 +2,33 @@ package main
 
 import "fmt"
 
-func getRow(rowIndex int) []int {
-	var res []int
-	var computeNum = cachedComputeNum(rowIndex + 1)
-	for i := 0; i <= rowIndex; i++ {
-		res = append(res, computeNum(rowIndex, i))
-	}
-	return res
-}
+func fib(N int) int {
+	var m = make(map[int]int)
+	var f func(int) int
 
-func cachedComputeNum(numRows int) func(int, int) int {
-	cache := make([][]int, numRows)
-	for i := 0; i < numRows; i++  {
-		cache[i] = make([]int, numRows)
-	}
-
-	return func (i, j int) int {
-		return computeNum(i, j, cache)
-	}
-}
-
-func computeNum(i, j int, cache [][]int) int {
-	var n int
-	if cache[i][j] == 0 {
-		if j == 0 || i == j {
-			n = 1
-		} else {
-			n = computeNum(i - 1, j - 1, cache) + computeNum(i - 1, j, cache)
+	f = func(N int) int {
+		if N == 0 || N == 1 {
+			return N
 		}
-		cache[i][j] = n
+		if _, ok := m[N-1]; !ok {
+			m[N-1] = f(N-1)
+		}
+		if _, ok := m[N-2]; !ok {
+			m[N-2] = f(N-2)
+		}
+		return m[N-1] + m[N-2]
 	}
-	return cache[i][j]
+
+	return f(N)
+}
+
+func changeM(m map[int]int) {
+	m[1] = 1
 }
 
 func main() {
-	//cache := make([][]int, 5)
-	//for i := 0; i < 5; i++  {
-	//	cache[i] = make([]int, 5)
-	//}
-	//t(cache)
-	//fmt.Println(cache)
-	//a = append(a, []int{1})
-	fmt.Println(getRow(3))
-	//
-	//n := 5
-	//var a [][]int = make([][]int, n)
-	//for i := 0; i < n; i++  {
-	//	a[i] = make([]int, n)
-	//}
-	//a[0][0] = 1
-	//fmt.Println(a)
+	var m map[int]int
+	m = make(map[int]int)
+	changeM(m)
+	fmt.Println(m)
 }

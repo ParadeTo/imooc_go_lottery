@@ -41,15 +41,8 @@ func (b *Bootstrapper) Bootstrap() *Bootstrapper {
 	b.Favicon(StaticAssets + Favicon)
 	b.StaticWeb(StaticAssets[1:len(StaticAssets)-1], StaticAssets)
 	b.setupCron()
-	//b.Use(func(c iris.Context) {
-	//	//fmt.Println("sadg")
-	//	//fmt.Println(context.Get())
-	//	c.GetViewData()
-	//	c.Next()
-	//})
 	b.Use(recover.New())
 	b.Use(logger.New())
-
 	return b
 }
 
