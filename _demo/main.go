@@ -2,33 +2,32 @@ package main
 
 import "fmt"
 
-func fib(N int) int {
-	var m = make(map[int]int)
-	var f func(int) int
-
-	f = func(N int) int {
-		if N == 0 || N == 1 {
-			return N
-		}
-		if _, ok := m[N-1]; !ok {
-			m[N-1] = f(N-1)
-		}
-		if _, ok := m[N-2]; !ok {
-			m[N-2] = f(N-2)
-		}
-		return m[N-1] + m[N-2]
-	}
-
-	return f(N)
+type TreeNode struct {
+ 	Val int
+	Left *TreeNode
+  Right *TreeNode
 }
 
-func changeM(m map[int]int) {
-	m[1] = 1
+func maxDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	leftDepth := maxDepth(root.Left)
+	rightDepth := maxDepth(root.Right)
+	if leftDepth > rightDepth {
+		return leftDepth + 1
+	}
+	return rightDepth + 1
 }
 
 func main() {
-	var m map[int]int
-	m = make(map[int]int)
-	changeM(m)
-	fmt.Println(m)
+	root := &TreeNode{}
+	root.Val = 3
+	left := &TreeNode{}
+	left.Val = 9
+	right := &TreeNode{}
+	right.Val = 20
+	root.Left = left
+	root.Right = right
+	fmt.Println(maxDepth(root))
 }

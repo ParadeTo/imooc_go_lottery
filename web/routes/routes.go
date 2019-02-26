@@ -13,4 +13,11 @@ func Configure(b *bootstrap.Bootstrapper) {
 	index := mvc.New(b.Party("/"))
 	index.Register(giftService)
 	index.Handle(new(controllers.IndexController))
+
+	admin := mvc.New(b.Party("/admin"))
+	admin.Register(giftService)
+	admin.Handle(new(controllers.AdminController))
+
+	adminResult := admin.Party("/result")
+	adminResult.Register()
 }
