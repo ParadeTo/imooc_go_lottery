@@ -11,6 +11,11 @@ import (
 type IndexController struct {
 	Ctx iris.Context
 	GiftService services.GiftService
+	UserdayService services.UserdayService
+	UserService services.UserService
+	BlackipService services.BlackipService
+	CodeService services.CodeService
+	ResultService services.ResultService
 }
 
 func (c *IndexController) Get() string {

@@ -60,7 +60,7 @@ func (d *BlackipDao) Create(data *models.LtBlackip) error {
 	return err
 }
 
-func (d *BlackipDao) GetByIp(ip *models.LtBlackip) *models.LtBlackip {
+func (d *BlackipDao) GetByIp(ip string) *models.LtBlackip {
 	datalist := make([]models.LtBlackip, 0)
 	err := d.engine.Where("ip=?", ip).
 		Desc("id").

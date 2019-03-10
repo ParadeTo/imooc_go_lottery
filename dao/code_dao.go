@@ -59,3 +59,21 @@ func (d *CodeDao) Create(data *models.LtCode) error {
 	_, err := d.engine.Insert(data)
 	return err
 }
+
+func (d *CodeDao) UpdateByCode(data *models.LtCode, columns []string) error {
+	_, err := d.engine.Where("code=?", data.Code).
+		MustCols(columns...).Update(data)
+	return err
+}
+
+func (d *CodeDao) NextUsingCode(giftId, codeId int) *models.LtCode {
+	datalist := make([]models.LtCode, 0)
+	err := d.engine.Where("gift_id=?", giftId).
+		Where("sys_status=?", 0).
+		Where("id>?", codeId).
+		Asc("id").Limit(1).Find(&datalist)
+	if err != nil || len(datalist) < 1 {
+		return nil
+	}
+	return &datalist[0]
+}

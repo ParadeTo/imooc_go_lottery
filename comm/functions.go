@@ -237,3 +237,10 @@ func GetStringFromMap(dm map[string]interface{}, key string, d string) string {
 	}
 	return GetString(data, d)
 }
+
+func GetTodayIntDay() int {
+	y, m, d := time.Now().Date()
+	strDay := fmt.Sprintf("%d%02d%02d", y, m, d)
+	day, _ := strconv.Atoi(strDay)
+	return day
+}

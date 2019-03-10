@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"imooc_go_lottery/comm"
 )
 
 func main() {
@@ -11,4 +12,6 @@ func main() {
 	for index, runeValue := range nihongo {
 		fmt.Printf("%#U starts at byte position %d\n", runeValue, index)
 	}
+
+	fmt.Println(comm.Ip4toInt("1.1.1.1"))
 }
